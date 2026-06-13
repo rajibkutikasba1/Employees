@@ -1,41 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
-        .box { background: white; width: 350px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
-        input { width: 90%; margin: 5px; padding: 8px; }
-        button { background: #007bff; color: white; padding: 10px; border: none; width: 95%; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <img src="https://i.ibb.co/hxHR0pbY/17813608134851349478934355537905.jpg" width="100">
-    
-    <div class="box">
-        <h3>Register</h3>
-        <input id="r_nid" placeholder="ID"><input id="r_pass" type="password" placeholder="Password">
-        <button onclick="register()">Register</button>
-        <hr>
-        <h3>Login</h3>
-        <input id="l_nid" placeholder="ID"><input id="l_pass" type="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-    </div>
-    <div id="result"></div>
+<script>
+    // আপনি যখন লগইন করবেন, তখন এই ফাংশনটি দিয়ে সব ডাটা দেখবেন
+    async function showAllUsers() {
+        let res = await fetch('/all-users');
+        let users = await res.json();
+        let html = "<h3>All Users List</h3><table border='1'>";
+        users.forEach(u => {
+            html += `<tr><td>${u.nid}</td><td>${u.name}</td><td>${u.country}</td></tr>`;
+        });
+        html += "</table>";
+        document.getElementById('result').innerHTML = html;
+    }
+</script>
 
-    <script>
-        async function register() {
-            let data = { nid: document.getElementById('r_nid').value, password: document.getElementById('r_pass').value };
-            await fetch('/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-            alert("Registered!");
-        }
-        async function login() {
-            let data = { nid: document.getElementById('l_nid').value, password: document.getElementById('l_pass').value };
-            let res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-            let d = await res.json();
-            if(d) {
-                document.getElementById('result').innerHTML = `<div class="box"><h3>Welcome ${d.nid}</h3><img src="${d.image_url}" width="100"></div>`;
-            } else { alert("Wrong ID or Password!"); }
-        }
-    </script>
-</body>
-</html>
+<button onclick="showAllUsers()">View All Users (Admin)</button>
