@@ -1,0 +1,37 @@
+<div class="no-print">
+    <h2>User Registration</h2>
+    <input id="nid" placeholder="ID Number">
+    <input id="password" type="password" placeholder="Set Password">
+    <button onclick="register()">Register Account</button>
+    
+    <hr>
+    
+    <h2>User Login</h2>
+    <input id="loginNid" placeholder="ID Number">
+    <input id="loginPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+
+<script>
+    async function register() {
+        let data = { 
+            nid: document.getElementById('nid').value, 
+            password: document.getElementById('password').value,
+            // অন্যান্য ফিল্ড এখানে যোগ করবেন
+        };
+        await fetch('/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        alert("Account Created!");
+    }
+
+    async function login() {
+        let data = { nid: document.getElementById('loginNid').value, password: document.getElementById('loginPass').value };
+        let res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        let d = await res.json();
+        if(d) {
+            // লগইন সফল হলে কার্ড দেখাবে
+            showCard(d);
+        } else {
+            alert("Invalid ID or Password!");
+        }
+    }
+</script>
