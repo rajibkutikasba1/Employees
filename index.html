@@ -1,37 +1,41 @@
-<div class="no-print">
-    <h2>User Registration</h2>
-    <input id="nid" placeholder="ID Number">
-    <input id="password" type="password" placeholder="Set Password">
-    <button onclick="register()">Register Account</button>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+        .box { background: white; width: 350px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+        input { width: 90%; margin: 5px; padding: 8px; }
+        button { background: #007bff; color: white; padding: 10px; border: none; width: 95%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <img src="https://i.ibb.co/hxHR0pbY/17813608134851349478934355537905.jpg" width="100">
     
-    <hr>
-    
-    <h2>User Login</h2>
-    <input id="loginNid" placeholder="ID Number">
-    <input id="loginPass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-</div>
+    <div class="box">
+        <h3>Register</h3>
+        <input id="r_nid" placeholder="ID"><input id="r_pass" type="password" placeholder="Password">
+        <button onclick="register()">Register</button>
+        <hr>
+        <h3>Login</h3>
+        <input id="l_nid" placeholder="ID"><input id="l_pass" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+    <div id="result"></div>
 
-<script>
-    async function register() {
-        let data = { 
-            nid: document.getElementById('nid').value, 
-            password: document.getElementById('password').value,
-            // অন্যান্য ফিল্ড এখানে যোগ করবেন
-        };
-        await fetch('/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-        alert("Account Created!");
-    }
-
-    async function login() {
-        let data = { nid: document.getElementById('loginNid').value, password: document.getElementById('loginPass').value };
-        let res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-        let d = await res.json();
-        if(d) {
-            // লগইন সফল হলে কার্ড দেখাবে
-            showCard(d);
-        } else {
-            alert("Invalid ID or Password!");
+    <script>
+        async function register() {
+            let data = { nid: document.getElementById('r_nid').value, password: document.getElementById('r_pass').value };
+            await fetch('/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            alert("Registered!");
         }
-    }
-</script>
+        async function login() {
+            let data = { nid: document.getElementById('l_nid').value, password: document.getElementById('l_pass').value };
+            let res = await fetch('/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            let d = await res.json();
+            if(d) {
+                document.getElementById('result').innerHTML = `<div class="box"><h3>Welcome ${d.nid}</h3><img src="${d.image_url}" width="100"></div>`;
+            } else { alert("Wrong ID or Password!"); }
+        }
+    </script>
+</body>
+</html>
