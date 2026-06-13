@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ডিজিটাল এন্ট্রি সিস্টেম</title>
+</head>
+<body>
+    <h2>তথ্য এন্ট্রি ফর্ম</h2>
+    <form id="dataForm">
+        <input type="text" name="nid" placeholder="এনআইডি নাম্বার" required><br>
+        <input type="text" name="name" placeholder="নাম" required><br>
+        <input type="text" name="father_name" placeholder="পিতার নাম"><br>
+        <input type="text" name="mother_name" placeholder="মাতার নাম"><br>
+        <input type="text" name="village" placeholder="গ্রাম"><br>
+        <input type="text" name="post_office" placeholder="পোস্ট অফিস"><br>
+        <input type="text" name="thana" placeholder="থানা"><br>
+        <input type="text" name="district" placeholder="জেলা"><br>
+        <input type="text" name="blood_group" placeholder="রক্তের গ্রুপ"><br>
+        <input type="text" name="mobile" placeholder="মোবাইল নাম্বার"><br>
+        <input type="date" name="dob"><br>
+        <button type="submit">সেভ করুন</button>
+    </form>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/add-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) alert("সফলভাবে সেভ হয়েছে!");
+            else alert("এরর হয়েছে!");
+        });
+    </script>
+</body>
+</html>
