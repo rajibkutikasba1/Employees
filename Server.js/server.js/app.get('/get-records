@@ -1,0 +1,8 @@
+app.get('/get-records', async (req, res) => {
+    try {
+        const result = await client.query("SELECT * FROM patients ORDER BY id DESC");
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
