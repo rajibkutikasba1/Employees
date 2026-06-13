@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; text-align: center; }
+        .no-print { width: 400px; margin: auto; padding: 20px; border: 1px solid #ddd; background: #fdfdfd; }
+        .card { border: 2px solid #000; padding: 20px; width: 350px; margin: 20px auto; text-align: center; }
+        .logo-placeholder { width: 80px; height: 80px; border: 1px dashed #999; margin: 10px auto; display: flex; align-items: center; justify-content: center; color: #999; font-size: 10px; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <div class="logo-placeholder">Logo Here</div>
+        <h2>Employee Entry</h2>
+        <input id="nid" placeholder="ID"><br>
+        <input id="name" placeholder="Name"><br>
+        <input id="country" placeholder="Country"><br>
+        <input id="mobile" placeholder="Mobile"><br>
+        <input id="passport" placeholder="Passport"><br>
+        <input id="profession" placeholder="Profession"><br>
+        <input type="file" id="imgFile"><br>
+        <button onclick="save()">Save Data</button>
+        <hr>
+        <input id="searchId" placeholder="Search ID">
+        <button onclick="search()">Search</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        let imgData = "";
+        document.getElementById('imgFile').onchange = function() {
+            let reader = new FileReader();
+            reader.onload = e => imgData = e.target.result;
+            reader.readAsDataURL(this.files[0]);
+        };
+        async function save() {
+            let data = { nid: document.getElementById('nid').value, name: document.getElementById('name').value, country: document.getElementById('country').value, mobile: document.getElementById('mobile').value, passport: document.getElementById('passport').value, profession: document.getElementById('profession').value, image: imgData };
+            await fetch('/add-record', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            alert("Data Saved Successfully!");
+        }
+        async function search() {
+            let id = document.getElementById('searchId').value;
+            let res = await fetch(`/search?nid=${id}`);
+            let d = await res.json();
+            if(d) {
+                document.getElementById('result').innerHTML = `
+                <div class="card">
+                    <div class="logo-placeholder">Logo Here</div>
+                    <img src="${d.image_url}" width="100" style="border:1px solid #000;">
+                    <h3>${d.name}</h3>
+                    <p><b>ID:</b> ${d.nid}</p>
+                    <p><b>Country:</b> ${d.country}</p>
+                    <p><b>Mobile:</b> ${d.mobile}</p>
+                    <p><b>Passport:</b> ${d.passport}</p>
+                    <p><b>Profession:</b> ${d.profession}</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?data=http://employees-nrwh.onrender.com/?nid=${d.nid}" width="150">
+                    <br><button class="no-print" onclick="window.print()">Print Card</button>
+                </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
