@@ -1,15 +1,37 @@
-<script>
-    // আপনি যখন লগইন করবেন, তখন এই ফাংশনটি দিয়ে সব ডাটা দেখবেন
-    async function showAllUsers() {
-        let res = await fetch('/all-users');
-        let users = await res.json();
-        let html = "<h3>All Users List</h3><table border='1'>";
-        users.forEach(u => {
-            html += `<tr><td>${u.nid}</td><td>${u.name}</td><td>${u.country}</td></tr>`;
-        });
-        html += "</table>";
-        document.getElementById('result').innerHTML = html;
-    }
-</script>
-
-<button onclick="showAllUsers()">View All Users (Admin)</button>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+        .box { background: white; width: 350px; margin: auto; padding: 20px; border-radius: 10px; }
+        input, button { width: 90%; margin: 5px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <img src="https://i.ibb.co/hxHR0pbY/17813608134851349478934355537905.jpg" width="100">
+    <div class="box">
+        <h3>Registration</h3>
+        <input id="r_nid" placeholder="ID"><input id="r_pass" type="password" placeholder="Pass">
+        <button onclick="register()">Register</button>
+        <hr>
+        <h3>Login</h3>
+        <input id="l_nid" placeholder="ID"><input id="l_pass" type="password" placeholder="Pass">
+        <button onclick="login()">Login</button>
+    </div>
+    <div id="result"></div>
+    <script>
+        async function register() {
+            let d = {nid: document.getElementById('r_nid').value, password: document.getElementById('r_pass').value};
+            await fetch('/register', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(d)});
+            alert("Registered!");
+        }
+        async function login() {
+            let d = {nid: document.getElementById('l_nid').value, password: document.getElementById('l_pass').value};
+            let res = await fetch('/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(d)});
+            let user = await res.json();
+            if(user) document.getElementById('result').innerHTML = `<h3>Welcome ${user.nid}</h3>`;
+            else alert("Wrong Login!");
+        }
+    </script>
+</body>
+</html>
