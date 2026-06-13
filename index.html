@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Employees Information</title>
+</head>
+<body>
+    <h2>নতুন এমপ্লয়ি এন্ট্রি</h2>
+    <form id="addForm">
+        <input type="text" name="nid" placeholder="এনআইডি (এটি দিয়ে সার্চ করবেন)" required>
+        <input type="text" name="name" placeholder="নাম" required>
+        <button type="submit">সেভ করুন</button>
+    </form>
+
+    <hr>
+    <h2>এমপ্লয়ি খুঁজুন (এনআইডি লিখুন)</h2>
+    <input type="text" id="searchNid" placeholder="এনআইডি লিখুন">
+    <button onclick="searchEmp()">খুঁজুন</button>
+    <div id="result"></div>
+
+    <script>
+        // ডাটা সেভ করার কোড
+        document.getElementById('addForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            await fetch('/add-record', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            alert("সেভ হয়েছে!");
+        };
+
+        // ডাটা সার্চ করার কোড
+        async function searchEmp() {
+            const nid = document.getElementById('searchNid').value;
+            const res = await fetch(`/search?nid=${nid}`);
+            const data = await res.json();
+            document.getElementById('result').innerHTML = data ? `নাম: ${data.name}` : "পাওয়া যায়নি!";
+        }
+    </script>
+</body>
+</html>
