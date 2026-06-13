@@ -1,0 +1,12 @@
+app.post('/add-record', async (req, res) => {
+    const { nid, name, country, mobile, passport, profession, image_url } = req.body;
+    try {
+        const query = `INSERT INTO employees(nid, name, country, mobile, passport, profession, image_url) 
+                       VALUES($1, $2, $3, $4, $5, $6, $7)`;
+        await client.query(query, [nid, name, country, mobile, passport, profession, image_url]);
+        res.send("সফলভাবে সেভ হয়েছে!");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("এরর: " + err.message);
+    }
+});
