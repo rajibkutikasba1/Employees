@@ -1,36 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
+    <meta charset="UTF-8">
+    <title>Al-Mutawa Contracting</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
-        .box { background: white; width: 350px; margin: auto; padding: 20px; border-radius: 10px; }
-        input, button { width: 90%; margin: 5px; padding: 10px; }
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; text-align: center; }
+        .container { background: white; width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+        input { width: 90%; margin: 5px; padding: 8px; border: 1px solid #ddd; }
+        button { padding: 10px 20px; background: #333; color: white; border: none; cursor: pointer; margin-top: 10px; }
+        .card { width: 350px; margin: 20px auto; padding: 20px; border: 2px solid #000; background: white; text-align: center; }
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
-    <img src="https://i.ibb.co/hxHR0pbY/17813608134851349478934355537905.jpg" width="100">
-    <div class="box">
-        <h3>Registration</h3>
-        <input id="r_nid" placeholder="ID"><input id="r_pass" type="password" placeholder="Pass">
-        <button onclick="register()">Register</button>
+
+    <div class="container no-print">
+        <h2>Al-Mutawa Contracting</h2>
+        <input id="iqama" placeholder="ইকামা নাম্বার">
+        <input id="name" placeholder="নাম">
+        <input id="country" placeholder="দেশ">
+        <input id="passport" placeholder="পাসপোর্ট নাম্বার">
+        <input id="joinDate" placeholder="জয়েনিং তারিখ">
+        <input id="mobile" placeholder="মোবাইল নাম্বার">
+        <p>ছবি সিলেক্ট করুন:</p>
+        <input type="file" id="imgFile" accept="image/*">
+        <button onclick="saveData()">সেভ করুন</button>
         <hr>
-        <h3>Login</h3>
-        <input id="l_nid" placeholder="ID"><input id="l_pass" type="password" placeholder="Pass">
-        <button onclick="login()">Login</button>
+        <h3>সার্চ অপশন</h3>
+        <input id="searchId" placeholder="ইকামা নাম্বার দিয়ে সার্চ করুন">
+        <button onclick="searchData()">সার্চ</button>
     </div>
-    <div id="result"></div>
+
+    <div id="cardArea"></div>
+
     <script>
-        async function register() {
-            let d = {nid: document.getElementById('r_nid').value, password: document.getElementById('r_pass').value};
-            await fetch('/register', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(d)});
-            alert("Registered!");
+        let imgUrl = "";
+        document.getElementById('imgFile').onchange = function() {
+            let reader = new FileReader();
+            reader.onload = e => imgUrl = e.target.result;
+            reader.readAsDataURL(this.files[0]);
+        };
+
+        function saveData() {
+            let id = document.getElementById('iqama').value;
+            let data = {
+                name: document.getElementById('name').value,
+                country: document.getElementById('country').value,
+                passport: document.getElementById('passport').value,
+                joinDate: document.getElementById('joinDate').value,
+                mobile: document.getElementById('mobile').value,
+                img: imgUrl
+            };
+            localStorage.setItem("emp_" + id, JSON.stringify(data));
+            alert("ডাটা সেভ হয়েছে!");
         }
-        async function login() {
-            let d = {nid: document.getElementById('l_nid').value, password: document.getElementById('l_pass').value};
-            let res = await fetch('/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(d)});
-            let user = await res.json();
-            if(user) document.getElementById('result').innerHTML = `<h3>Welcome ${user.nid}</h3>`;
-            else alert("Wrong Login!");
+
+        function searchData() {
+            let id = document.getElementById('searchId').value;
+            let d = JSON.parse(localStorage.getItem("emp_" + id));
+            if(d) {
+                document.getElementById('cardArea').innerHTML = `
+                <div class="card">
+                    <h3>Al-Mutawa Contracting</h3>
+                    <img src="${d.img}" width="100" style="border:1px solid #000;">
+                    <p><b>ইকামা নাম্বার:</b> ${id}</p>
+                    <p><b>নাম:</b> ${d.name}</p>
+                    <p><b>দেশ:</b> ${d.country}</p>
+                    <p><b>পাসপোর্ট:</b> ${d.passport}</p>
+                    <p><b>জয়েনিং তারিখ:</b> ${d.joinDate}</p>
+                    <p><b>মোবাইল:</b> ${d.mobile}</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?data=Iqama:${id}" width="100">
+                    <p style="font-size:10px;">পি.ও. বক্স ৯২৭৮, দাম্মাম - ৩১৪১৩, সৌদি আরব<br>ফোন: +966 13 856 1169</p>
+                    <button class="no-print" onclick="window.print()">প্রিন্ট করুন</button>
+                </div>`;
+            } else { alert("এই আইডি পাওয়া যায়নি!"); }
         }
     </script>
 </body>
