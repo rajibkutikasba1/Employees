@@ -1,0 +1,30 @@
+<form id="dataForm">
+    <input type="text" name="nid" placeholder="এনআইডি" required>
+    <button type="submit" id="saveButton">সেভ করুন</button>
+</form>
+
+<script>
+    document.getElementById('dataForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // এটি পেজ রিলোড হওয়া বন্ধ করবে
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/add-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert("সফলভাবে সেভ হয়েছে!");
+            } else {
+                const errorText = await response.text();
+                alert("এরর: " + errorText);
+            }
+        } catch (err) {
+            alert("সার্ভার কানেকশনে সমস্যা হচ্ছে!");
+        }
+    });
+</script>
