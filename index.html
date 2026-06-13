@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; }
+        .form-container { width: 50%; background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd; }
+        .no-print { width: 100%; max-width: 600px; }
+        .search-container { margin-top: 30px; }
+        
+        /* প্রিন্ট স্টাইল */
+        @media print {
+            .no-print { display: none !important; }
+            #cardResult { width: 100%; border: 2px solid #000; padding: 40px; }
+            .card-table { width: 100%; border-collapse: collapse; }
+            .card-table td { border: 1px solid #000; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container no-print">
+    <h2>এমপ্লয়ি তথ্য এন্ট্রি</h2>
+    <input type="text" id="nid" placeholder="আইডি নাম্বার" style="width:100%; margin-bottom:10px;"><br>
+    <input type="text" id="name" placeholder="নাম" style="width:100%; margin-bottom:10px;"><br>
+    <input type="text" id="country" placeholder="দেশ" style="width:100%; margin-bottom:10px;"><br>
+    <input type="text" id="mobile" placeholder="মোবাইল নাম্বার" style="width:100%; margin-bottom:10px;"><br>
+    <input type="text" id="passport" placeholder="পাসপোর্ট নাম্বার" style="width:100%; margin-bottom:10px;"><br>
+    <input type="text" id="profession" placeholder="প্রফেশন" style="width:100%; margin-bottom:10px;"><br>
+    <input type="file" id="imgFile" accept="image/*"><br><br>
+    <button onclick="save()" style="width:100%; padding:10px; background:blue; color:white;">সেভ করুন</button>
+</div>
+
+<div class="search-container no-print">
+    <input type="text" id="searchId" placeholder="আইডি লিখে খুঁজুন">
+    <button onclick="search()">খুঁজুন</button>
+</div>
+
+<div id="cardResult"></div>
+
+<script>
+    let imgData = "";
+    document.getElementById('imgFile').onchange = function() {
+        let reader = new FileReader();
+        reader.onload = e => imgData = e.target.result;
+        reader.readAsDataURL(this.files[0]);
+    };
+
+    async function save() {
+        let data = { nid: document.getElementById('nid').value, name: document.getElementById('name').value, country: document.getElementById('country').value, mobile: document.getElementById('mobile').value, passport: document.getElementById('passport').value, profession: document.getElementById('profession').value, image: imgData };
+        await fetch('/add-record', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        alert("সেভ হয়েছে!");
+    }
+
+    async function search() {
+        let id = document.getElementById('searchId').value;
+        let res = await fetch(`/search?nid=${id}`);
+        let d = await res.json();
+        document.getElementById('cardResult').innerHTML = `
+        <div style="text-align:center;">
+            <img src="${d.image_url}" width="150" height="150"><br>
+            <table class="card-table">
+                <tr><td>আইডি:</td><td>${d.nid}</td></tr>
+                <tr><td>নাম:</td><td>${d.name}</td></tr>
+                <tr><td>দেশ:</td><td>${d.country}</td></tr>
+                <tr><td>মোবাইল:</td><td>${d.mobile}</td></tr>
+                <tr><td>পাসপোর্ট:</td><td>${d.passport}</td></tr>
+                <tr><td>পেশা:</td><td>${d.profession}</td></tr>
+            </table>
+            <img src="https://barcode.tec-it.com/barcode.ashx?data=${d.nid}&code=Code128" width="300"><br>
+            <button class="no-print" onclick="window.print()" style="padding:10px; margin-top:20px;">প্রিন্ট কার্ড</button>
+        </div>`;
+    }
+</script>
+</body>
+</html>
